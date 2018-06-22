@@ -3,8 +3,7 @@
 #include <stdexcept>
 #include <set>
 
-
-int Intepreter::visit(ASTNode* node) {
+int Intepreter::visit_binop(ASTNode* node) {
 	if (node->t.get_type() == Token::type::plus) {
 		return visit(node->left) + visit(node->right);
 	} else if (node->t.get_type() == Token::type::minus) {
@@ -13,8 +12,36 @@ int Intepreter::visit(ASTNode* node) {
 		return visit(node->left) * visit(node->right);
 	} else if (node->t.get_type() == Token::type::divide) {
 		return visit(node->left) / visit(node->right);
-	} else if (node->t.get_type() == Token::type::integer) {
+	} else {
+		throw std::runtime_error(__PRETTY_FUNCTION__);
+	}
+}
+
+int Intepreter::visit_integer(ASTNode* node) {
+	if (node->t.get_type() == Token::type::integer) {
 		return std::stoi(node->t.get_value());
+	} else {
+		throw std::runtime_error(__PRETTY_FUNCTION__);
+	}
+}
+
+int Intepreter::visit_unop(ASTNode* node) {
+	if (node->t.get_type() == Token::type::plus) {
+		return +visit(node->left);
+	} else if (node->t.get_type() == Token::type::minus) {
+		return -visit(node->left);
+	} else {
+		throw std::runtime_error(__PRETTY_FUNCTION__);
+	}
+}
+
+int Intepreter::visit(ASTNode* node) {
+	if (node->get_type() == ASTNode::type::binop) {
+		return visit_binop(node);
+	} else if (node->get_type() == ASTNode::type::unop) {
+		return visit_unop(node);
+	} else if (node->get_type() == ASTNode::type::integer) {
+		return visit_integer(node);
 	} else {
 		throw std::runtime_error(__PRETTY_FUNCTION__);
 	}

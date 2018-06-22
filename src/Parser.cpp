@@ -15,11 +15,17 @@ ASTNode* Parser::term() {
 	Token t = current_token;
 	if (t.get_type() == Token::type::integer) {
 		eat(Token::type::integer);
-		result = ASTNode::make_integer_node(t);
+		result = ASTNode::make_integer(t);
 	} else if (t.get_type() == Token::type::lparen) {
 		eat(Token::type::lparen);
 		result = expr();
 		eat(Token::type::rparen);
+	} else if (t.get_type() == Token::type::plus) {
+		eat(Token::type::plus);
+		result = ASTNode::make_unop(term(), t);
+	} else if (t.get_type() == Token::type::minus) {
+		eat(Token::type::minus);
+		result = ASTNode::make_unop(term(), t);
 	} else {
 		throw std::runtime_error(__PRETTY_FUNCTION__);
 	}
@@ -40,7 +46,7 @@ ASTNode* Parser::factor() {
 			throw std::runtime_error("Error in term");
 		}
 
-		result = ASTNode::make_binop_node(result, t, term());
+		result = ASTNode::make_binop(result, t, term());
 	}
 
 	return result;
@@ -59,7 +65,7 @@ ASTNode* Parser::expr() {
 		} else {
 			throw std::runtime_error("Error in term");
 		}
-		result = ASTNode::make_binop_node(result, t, factor());
+		result = ASTNode::make_binop(result, t, factor());
 	}
 
 	return result;
