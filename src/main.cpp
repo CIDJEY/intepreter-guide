@@ -13,6 +13,7 @@ int main(int argc, char** argv) {
 		std::cout << "Input: " << input << std::endl;
 		Intepreter inter(input);
 		std::cout << "Calculated expr: " << inter.interpret() << std::endl;
+		std::cout << "RPN: " << inter.rpn() << std::endl;
 		return 0;
 	} catch (std::exception& err) {
 		std::cout << err.what() << std::endl;

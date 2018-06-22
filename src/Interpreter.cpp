@@ -1,6 +1,7 @@
 
 #include <Interpreter.hpp>
 #include <stdexcept>
+#include <set>
 
 
 int Intepreter::visit(ASTNode* node) {
@@ -14,6 +15,26 @@ int Intepreter::visit(ASTNode* node) {
 		return visit(node->left) / visit(node->right);
 	} else if (node->t.get_type() == Token::type::integer) {
 		return std::stoi(node->t.get_value());
+	} else {
+		throw std::runtime_error(__PRETTY_FUNCTION__);
+	}
+}
+
+
+std::string Intepreter::visit_rpn(ASTNode* node) {
+	auto type = node->t.get_type();
+
+	std::set<Token::type> binops = {
+		Token::type::plus,
+		Token::type::minus,
+		Token::type::multiplicate,
+		Token::type::divide
+	};
+
+	if (binops.find(node->t.get_type()) != binops.end()) {
+		return visit_rpn(node->left) + " " + visit_rpn(node->right) + " " + node->t.get_value();
+	} else if (node->t.get_type() == Token::type::integer) {
+		return node->t.get_value();
 	} else {
 		throw std::runtime_error(__PRETTY_FUNCTION__);
 	}
