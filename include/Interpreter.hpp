@@ -18,13 +18,18 @@ struct Intepreter {
 		return visit(root);
 	}
 
-	std::string rpn() {
+	std::string rpn_notation() {
 		return visit_rpn(root);
+	}
+
+	std::string lisp_notation() {
+		return visit_lisp(root);
 	}
 
 private:
 	int visit(ASTNode* node);
 	std::string visit_rpn(ASTNode* node);
+	std::string visit_lisp(ASTNode* node);
 
 	Parser parser;
 	ASTNode* root = nullptr;
