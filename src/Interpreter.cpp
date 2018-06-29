@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <set>
 
-int Intepreter::visit_binop(ASTNode* node) {
+int Intepreter::visit_binop(BinOpNode* node) {
 	if (node->t.get_type() == Token::type::plus) {
 		return visit(node->left) + visit(node->right);
 	} else if (node->t.get_type() == Token::type::minus) {
@@ -17,7 +17,7 @@ int Intepreter::visit_binop(ASTNode* node) {
 	}
 }
 
-int Intepreter::visit_integer(ASTNode* node) {
+int Intepreter::visit_integer(IntegerNode* node) {
 	if (node->t.get_type() == Token::type::integer) {
 		return std::stoi(node->t.get_value());
 	} else {
@@ -25,11 +25,11 @@ int Intepreter::visit_integer(ASTNode* node) {
 	}
 }
 
-int Intepreter::visit_unop(ASTNode* node) {
+int Intepreter::visit_unop(UnOpNode* node) {
 	if (node->t.get_type() == Token::type::plus) {
-		return +visit(node->left);
+		return +visit(node->expr);
 	} else if (node->t.get_type() == Token::type::minus) {
-		return -visit(node->left);
+		return -visit(node->expr);
 	} else {
 		throw std::runtime_error(__PRETTY_FUNCTION__);
 	}
@@ -37,55 +37,12 @@ int Intepreter::visit_unop(ASTNode* node) {
 
 int Intepreter::visit(ASTNode* node) {
 	if (node->get_type() == ASTNode::type::binop) {
-		return visit_binop(node);
+		return visit_binop((BinOpNode*)node);
 	} else if (node->get_type() == ASTNode::type::unop) {
-		return visit_unop(node);
+		return visit_unop((UnOpNode*)node);
 	} else if (node->get_type() == ASTNode::type::integer) {
-		return visit_integer(node);
+		return visit_integer((IntegerNode*)node);
 	} else {
 		throw std::runtime_error(__PRETTY_FUNCTION__);
 	}
-}
-
-
-std::string Intepreter::visit_rpn(ASTNode* node) {
-	auto type = node->t.get_type();
-
-	std::set<Token::type> binops = {
-		Token::type::plus,
-		Token::type::minus,
-		Token::type::multiplicate,
-		Token::type::divide
-	};
-
-	if (binops.find(node->t.get_type()) != binops.end()) {
-		return visit_rpn(node->left) + " " + visit_rpn(node->right) + " " + node->t.get_value();
-	} else if (node->t.get_type() == Token::type::integer) {
-		return node->t.get_value();
-	} else {
-		throw std::runtime_error(__PRETTY_FUNCTION__);
-	}
-}
-
-std::string Intepreter::visit_lisp(ASTNode* node) {
-	auto type = node->t.get_type();
-
-	std::set<Token::type> binops = {
-		Token::type::plus,
-		Token::type::minus,
-		Token::type::multiplicate,
-		Token::type::divide
-	};
-
-	std::string result = "";
-
-	if (binops.find(node->t.get_type()) != binops.end()) {
-		result += "(" + node->t.get_value() + " " + visit_lisp(node->left) + " " + visit_lisp(node->right) + ")";
-	} else if (node->t.get_type() == Token::type::integer) {
-		result = node->t.get_value();
-	} else {
-		throw std::runtime_error(__PRETTY_FUNCTION__);
-	}
-
-	return result;
 }

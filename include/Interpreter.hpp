@@ -28,9 +28,9 @@ struct Intepreter {
 
 private:
 	int visit(ASTNode* node);
-	int visit_binop(ASTNode* node);
-	int visit_unop(ASTNode* node);
-	int visit_integer(ASTNode* node);
+	int visit_binop(BinOpNode* node);
+	int visit_unop(UnOpNode* node);
+	int visit_integer(IntegerNode* node);
 	std::string visit_rpn(ASTNode* node);
 	std::string visit_lisp(ASTNode* node);
 

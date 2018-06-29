@@ -10,32 +10,45 @@ struct ASTNode {
 		integer
 	};
 
-	ASTNode(ASTNode* left, Token t, ASTNode* right, type type):
-		left(left), t(t), right(right), _type(type) {}
-
-	~ASTNode() {
-		delete left;
-		delete right;
-	}
-
-	static ASTNode* make_binop(ASTNode* left, Token t, ASTNode* right) {
-		return new ASTNode(left, t, right, type::binop);
-	}
-
-	static ASTNode* make_unop(ASTNode* expr, Token t) {
-		return new ASTNode(expr, t, nullptr, type::unop);
-	}
-
-	static ASTNode* make_integer(Token t) {
-		return new ASTNode(nullptr, t, nullptr, type::integer);
-	}
+	ASTNode(Token t, type type): t(t), _type(type) {}
 
 	type get_type() {
 		return _type;
 	}
 
-	ASTNode* left = nullptr;
-	ASTNode* right = nullptr;
 	Token t;
 	type _type;
+};
+
+struct BinOpNode: public ASTNode {
+	~BinOpNode() {
+		delete left;
+		delete right;
+	}
+
+	BinOpNode(Token t, ASTNode* left, ASTNode* right):
+		ASTNode(t, ASTNode::type::binop),
+		left(left),
+		right(right) {}
+
+	ASTNode* left = nullptr;
+	ASTNode* right = nullptr;
+
+};
+
+
+struct UnOpNode: public ASTNode {
+	UnOpNode(Token t, ASTNode* expr):
+		ASTNode(t, ASTNode::type::unop),
+		expr(expr)  {}
+
+	~UnOpNode() {
+		delete expr;
+	}
+
+	ASTNode* expr = nullptr;
+};
+
+struct IntegerNode: public ASTNode {
+	IntegerNode(Token t): ASTNode(t, ASTNode::type::integer) {}
 };
