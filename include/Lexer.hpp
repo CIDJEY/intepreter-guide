@@ -33,7 +33,7 @@ struct Lexer {
 	}
 
 	Token divide() {
-		_pos++;
+		_pos += std::string("DIV").length();
 		return Token::make_divide();
 	}
 

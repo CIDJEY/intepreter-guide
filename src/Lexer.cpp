@@ -3,6 +3,7 @@
 #include <stdexcept>
 
 #include <iostream>
+#include <algorithm>
 
 Lexer::Lexer(std::ifstream& input) {
 	_input = std::string((std::istreambuf_iterator<char>(input)),
@@ -13,6 +14,9 @@ Lexer::Lexer(std::ifstream& input) {
 	}});
 	reserved_ids.insert({std::string("END"), [&]() {
 		return end();
+	}});
+	reserved_ids.insert({std::string("DIV"), [&]() {
+		return divide();
 	}});
 }
 
@@ -31,10 +35,12 @@ Token Lexer::integer() {
 Token Lexer::id() {
 	uint32_t shift = 0;
 	std::string value;
-	while (isalpha(_input[_pos + shift])) {
+	while (isalpha(_input[_pos + shift]) || (_input[_pos + shift] == '_')) {
 		value += _input[_pos + shift];
 		shift++;
 	}
+
+	std::transform(value.begin(), value.end(), value.begin(), ::toupper);
 
 	auto found = reserved_ids.find(value);
 	if (found != reserved_ids.end()) {
@@ -54,7 +60,7 @@ Token Lexer::get_next_token() {
 
 	if(isdigit(current_char)) {
 		return integer();
-	} else if (isalpha(current_char)) {
+	} else if (isalpha(current_char) || (current_char == '_')) {
 		return id();
 	} else if (current_char == '+') {
 		return plus();
@@ -62,8 +68,6 @@ Token Lexer::get_next_token() {
 		return minus();
 	} else if (current_char == '*') {
 		return multiplicate();
-	} else if (current_char == '/') {
-		return divide();
 	} else if (current_char == '(') {
 		return lparen();
 	} else if (current_char == ')') {
@@ -78,5 +82,7 @@ Token Lexer::get_next_token() {
 		_pos++;
 		return get_next_token();
 	}
-	throw std::runtime_error("Error while parsing input");
+	std::string error("Error while parsing input, current char: ");
+	error += current_char;
+	throw std::runtime_error(error);
 }

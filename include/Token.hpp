@@ -50,7 +50,7 @@ struct Token {
 	}
 
 	static Token make_divide() {
-		return Token(type::divide, "/");
+		return Token(type::divide, "DIV");
 	}
 
 	static Token make_lparen() {

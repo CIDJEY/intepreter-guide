@@ -6,7 +6,9 @@ void Parser::eat(const Token::type _type) {
 	if (current_token.get_type() == _type) {
 		current_token = lexer.get_next_token();
 	} else {
-		throw std::runtime_error("Error while eating");
+		std::string error("Error while eating, current token: ");
+		error += current_token.get_type();
+		throw std::runtime_error(error);
 	}
 }
 
