@@ -5,17 +5,22 @@
 #include <Node.hpp>
 
 struct Parser {
-	Parser(const std::string& input): lexer(input) {
+	Parser(std::ifstream& input): lexer(input) {
 		current_token = lexer.get_next_token();
 	}
 
-	ASTNode* parse() {
-		return expr();
-	}
+	ASTNode* parse();
 
 private:
 	void eat(const Token::type _type);
 
+	ASTNode* program();
+	ASTNode* compound_statement();
+	std::vector<ASTNode*> statement_list();
+	ASTNode* statement();
+	ASTNode* assignment_statement();
+	ASTNode* variable();
+	ASTNode* empty();
 	ASTNode* term();
 	ASTNode* factor();
 	ASTNode* expr();

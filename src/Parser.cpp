@@ -10,6 +10,80 @@ void Parser::eat(const Token::type _type) {
 	}
 }
 
+ASTNode* Parser::parse() {
+	ASTNode* result = program();
+	if (current_token.get_type() != Token::type::eof) {
+		throw std::runtime_error("Something after DOT");
+	}
+
+	return result;
+}
+
+ASTNode* Parser::program() {
+	ASTNode* result = compound_statement();
+	eat(Token::type::dot);
+	return result;
+}
+
+ASTNode* Parser::compound_statement() {
+	CompoundNode* result = new CompoundNode();
+	eat(Token::type::begin);
+	result->children = statement_list();
+	eat(Token::type::end);
+
+	return (ASTNode*)result;
+}
+
+std::vector<ASTNode*> Parser::statement_list() {
+	std::vector<ASTNode*> result;
+
+	result.push_back(statement());
+
+	while (current_token.get_type() == Token::type::semi) {
+		eat(Token::type::semi);
+		result.push_back(statement());
+	}
+
+	if (current_token.get_type() == Token::type::id) {
+		throw std::runtime_error("Last statement must be with a semi");
+	}
+
+	return result;
+}
+
+ASTNode* Parser::statement() {
+	ASTNode* result = nullptr;
+
+	if (current_token.get_type() == Token::type::begin) {
+		result = compound_statement();
+	} else if (current_token.get_type() == Token::type::id) {
+		result = assignment_statement();
+	} else {
+		result = empty();
+	}
+
+	return result;
+}
+
+ASTNode* Parser::assignment_statement() {
+	ASTNode* result = nullptr;
+	ASTNode* left = variable();
+	eat(Token::type::assign);
+	ASTNode* right = expr();
+	result = (ASTNode*)(new AssignNode(left, right));
+	return result;
+}
+
+ASTNode* Parser::variable() {
+	ASTNode* result = (ASTNode*)(new VarNode(current_token));
+	eat(Token::type::id);
+	return result;
+}
+
+ASTNode* Parser::empty() {
+	return (ASTNode*)(new NoOpNode());
+}
+
 ASTNode* Parser::term() {
 	ASTNode* result = nullptr;
 	Token t = current_token;
@@ -27,7 +101,7 @@ ASTNode* Parser::term() {
 		eat(Token::type::minus);
 		result = (ASTNode*) (new UnOpNode(t, term()));
 	} else {
-		throw std::runtime_error(__PRETTY_FUNCTION__);
+		result = variable();
 	}
 	return result;
 }

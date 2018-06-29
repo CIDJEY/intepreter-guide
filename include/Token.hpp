@@ -12,7 +12,14 @@ struct Token {
 		integer,
 		lparen,
 		rparen,
-		eof
+		begin,
+		end,
+		semi,
+		assign,
+		dot,
+		id,
+		eof,
+		empty
 	};
 
 	Token() = default;
@@ -54,8 +61,36 @@ struct Token {
 		return Token(type::rparen, ")");
 	}
 
+	static Token make_begin() {
+		return Token(type::begin, "BEGIN");
+	}
+
+	static Token make_end() {
+		return Token(type::end, "END");
+	}
+
+	static Token make_semi() {
+		return Token(type::semi, ";");
+	}
+
+	static Token make_assign() {
+		return Token(type::assign, ":=");
+	}
+
+	static Token make_dot() {
+		return Token(type::dot, ".");
+	}
+
+	static Token make_id(const std::string& id) {
+		return Token(type::id, id);
+	}
+
 	static Token make_eof() {
 		return Token(type::eof, "");
+	}
+
+	static Token make_empty() {
+		return Token(type::empty, "");
 	}
 
 private:
