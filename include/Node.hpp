@@ -8,10 +8,14 @@ struct ASTNode {
 	enum type {
 		binop,
 		unop,
-		integer,
+		number,
 		compound,
 		assign,
 		var,
+		var_type,
+		var_declaration,
+		block,
+		program,
 		noop,
 	};
 
@@ -54,8 +58,8 @@ struct UnOpNode: public ASTNode {
 	ASTNode* expr = nullptr;
 };
 
-struct IntegerNode: public ASTNode {
-	IntegerNode(Token t): ASTNode(t, ASTNode::type::integer) {}
+struct NumberNode: public ASTNode {
+	NumberNode(Token t): ASTNode(t, ASTNode::type::number) {}
 };
 
 struct CompoundNode: public ASTNode {
@@ -68,6 +72,10 @@ struct CompoundNode: public ASTNode {
 	}
 
 	std::vector<ASTNode*> children;
+};
+
+struct VarNode: public ASTNode {
+	VarNode(Token t): ASTNode(t, ASTNode::type::var) {}
 };
 
 struct AssignNode: public ASTNode {
@@ -85,8 +93,55 @@ struct AssignNode: public ASTNode {
 	ASTNode* expr = nullptr;
 };
 
-struct VarNode: public ASTNode {
-	VarNode(Token t): ASTNode(t, ASTNode::type::var) {}
+
+struct TypeNode: public ASTNode {
+	TypeNode(Token t): ASTNode(t, ASTNode::type::var_type) {}
+};
+
+struct VarDeclarationNode: public ASTNode {
+	VarDeclarationNode(ASTNode* var, ASTNode* type):
+		ASTNode(Token::make_var(), ASTNode::type::var_declaration),
+		var(var),
+		type(type) {}
+	~VarDeclarationNode() {
+		delete var;
+		delete type;
+	}
+
+	ASTNode* var = nullptr;
+	ASTNode* type = nullptr;
+};
+
+struct BlockNode: public ASTNode {
+	BlockNode(const std::vector<ASTNode*> declarations, ASTNode* compound_statement):
+		ASTNode(Token::make_empty(), ASTNode::type::block),
+		declarations(declarations),
+		compound_statement(compound_statement) {}
+
+	~BlockNode() {
+		for (auto decl: declarations) {
+			delete decl;
+		}
+		delete compound_statement;
+	}
+
+	std::vector<ASTNode*> declarations;
+	ASTNode* compound_statement = nullptr;
+
+};
+
+struct ProgramNode: public ASTNode {
+	ProgramNode(ASTNode* name, ASTNode* block):
+	ASTNode(Token::make_empty(), ASTNode::type::program),
+	name(name),
+	block(block) {}
+
+	~ProgramNode() {
+		delete name;
+		delete block;
+	}
+	ASTNode* name = nullptr;
+	ASTNode* block = nullptr;
 };
 
 struct NoOpNode: public ASTNode {

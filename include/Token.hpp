@@ -8,13 +8,21 @@ struct Token {
 		plus,
 		minus,
 		multiplicate,
-		divide,
-		integer,
+		integer_div,
+		real_div,
+		integer_const,
+		real_const,
 		lparen,
 		rparen,
+		program,
+		var,
 		begin,
 		end,
+		integer, //type integer, reserved word
+		real, 	 //type real
 		semi,
+		colon,
+		comma,
 		assign,
 		dot,
 		id,
@@ -33,8 +41,12 @@ struct Token {
 		return _value;
 	}
 
-	static Token make_integer(const std::string& value) {
-		return Token(type::integer, value);
+	static Token make_integer_const(const std::string& value) {
+		return Token(type::integer_const, value);
+	}
+
+	static Token make_real_const(const std::string& value) {
+		return Token(type::real_const, value);
 	}
 
 	static Token make_plus() {
@@ -49,8 +61,12 @@ struct Token {
 		return Token(type::multiplicate, "*");
 	}
 
-	static Token make_divide() {
-		return Token(type::divide, "DIV");
+	static Token make_integer_div() {
+		return Token(type::integer_div, "DIV");
+	}
+
+	static Token make_real_div() {
+		return Token(type::real_div, "/");
 	}
 
 	static Token make_lparen() {
@@ -61,6 +77,14 @@ struct Token {
 		return Token(type::rparen, ")");
 	}
 
+	static Token make_program() {
+		return Token(type::program, "PROGRAM");
+	}
+
+	static Token make_var() {
+		return Token(type::var, "VAR");
+	}
+
 	static Token make_begin() {
 		return Token(type::begin, "BEGIN");
 	}
@@ -69,8 +93,24 @@ struct Token {
 		return Token(type::end, "END");
 	}
 
+	static Token make_integer() {
+		return Token(type::integer, "INTEGER");
+	}
+
+	static Token make_real() {
+		return Token(type::real, "REAL");
+	}
+
 	static Token make_semi() {
 		return Token(type::semi, ";");
+	}
+
+	static Token make_colon() {
+		return Token(type::colon, ":");
+	}
+
+	static Token make_comma() {
+		return Token(type::comma, ",");
 	}
 
 	static Token make_assign() {

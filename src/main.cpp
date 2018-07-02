@@ -1,5 +1,5 @@
 
-#include <Interpreter.hpp>
+#include <Intepreter.hpp>
 #include <iostream>
 #include <string>
 
@@ -16,7 +16,8 @@ int main(int argc, char** argv) {
 		}
 
 		Intepreter inter(input);
-		std::cout << "Calculated expr: " << inter.interpret() << std::endl;
+		inter.interpret();
+	//		std::cout << "Calculated expr: " << inter.interpret() << std::endl;
 
 		inter.print_global_scope();
 		return 0;

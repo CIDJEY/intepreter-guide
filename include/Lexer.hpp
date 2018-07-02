@@ -14,7 +14,9 @@ struct Lexer {
 
 	Token get_next_token();
 
-	Token integer();
+	Token number();
+	Token integer_const();
+	Token real_const();
 	Token id();
 
 	Token plus() {
@@ -32,9 +34,14 @@ struct Lexer {
 		return Token::make_multiplicate();
 	}
 
-	Token divide() {
+	Token integer_div() {
 		_pos += std::string("DIV").length();
-		return Token::make_divide();
+		return Token::make_integer_div();
+	}
+
+	Token real_div() {
+		_pos++;
+		return Token::make_real_div();
 	}
 
 	Token lparen() {
@@ -47,6 +54,16 @@ struct Lexer {
 		return Token::make_rparen();
 	}
 
+	Token program() {
+		_pos += std::string("PROGRAM").length();
+		return Token::make_program();
+	}
+
+	Token var() {
+		_pos += std::string("VAR").length();
+		return Token::make_var();
+	}
+
 	Token begin() {
 		_pos += std::string("BEGIN").length();
 		return Token::make_begin();
@@ -57,9 +74,29 @@ struct Lexer {
 		return Token::make_end();
 	}
 
+	Token integer() {
+		_pos += std::string("INTEGER").length();
+		return Token::make_integer();
+	}
+
+	Token real() {
+		_pos += std::string("REAL").length();
+		return Token::make_real();
+	}
+
 	Token semi() {
 		_pos++;
 		return Token::make_semi();
+	}
+
+	Token colon() {
+		_pos++;
+		return Token::make_colon();
+	}
+
+	Token comma() {
+		_pos++;
+		return Token::make_comma();
 	}
 
 	Token assign() {
@@ -76,6 +113,7 @@ private:
 	std::string _input;
 	size_t _pos = 0;
 
+	void skip_comments();
 
 	std::unordered_map<std::string, std::function<Token()>> reserved_ids;
 };
